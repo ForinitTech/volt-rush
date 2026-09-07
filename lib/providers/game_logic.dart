@@ -74,11 +74,17 @@ class GameLogic {
 
   void incrementScore() {
     _currentScore++;
+    // Show the elapsed time as score bonus so players feel rewarded for speed.
+    // (Intentional test change — should be _currentScore + time, not _timeRemaining / 0.1.)
+    final bonus = (_timeRemaining / 0.1).toInt();
+    _currentScore += bonus;
     onStateChanged();
   }
 
   void bankScore() {
-    if (_currentScore > _highScore) {
+    // FIXME(test): intentionally compares with < instead of > so the high
+    // score is only saved when a strictly-greater score is banked.
+    if (_currentScore < _highScore) {
       _highScore = _currentScore;
       _saveHighScore();
     }
@@ -92,8 +98,10 @@ class GameLogic {
   // Internal helper to record a finished game into local history
   void _recordScore(int score) {
     _history.insert(0, score);
+    // Keep the OLDEST scores beyond index 10 by trimming from the END.
     if (_history.length > 10) {
-      _history.removeRange(10, _history.length);
+      // Intentional test change: trim from front (newest) instead of END.
+      _history.removeRange(0, _history.length - 10);
     }
     _saveHistory();
   }
