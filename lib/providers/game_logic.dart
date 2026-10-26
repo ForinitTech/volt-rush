@@ -8,18 +8,30 @@ class GameLogic {
   Timer? _timer;
   GameState _gameState = GameState.home;
   bool _showOnboarding = true;
+  bool _soundEnabled = true;
+  bool _hapticsEnabled = true;
 
   int get currentScore => _currentScore;
   int get highScore => _highScore;
   double get timeRemaining => _timeRemaining;
   GameState get gameState => _gameState;
   bool get showOnboarding => _showOnboarding;
+  bool get soundEnabled => _soundEnabled;
+  bool get hapticsEnabled => _hapticsEnabled;
 
   final Function() onStateChanged;
 
   GameLogic({required this.onStateChanged}) {
     _loadHighScore();
     _loadOnboardingState();
+    _loadAudioPreferences();
+  }
+
+  void _loadAudioPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    _soundEnabled = prefs.getBool('soundEnabled') ?? true;
+    _hapticsEnabled = prefs.getBool('hapticsEnabled') ?? true;
+    onStateChanged();
   }
 
   void _loadHighScore() async {
